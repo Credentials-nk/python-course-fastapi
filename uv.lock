@@ -1,0 +1,23 @@
+version = 1
+revision = 3
+requires-python = ">=3.13"
+
+[[package]]
+name = "cowpy"
+version = "1.1.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6e/d3/bab2411dbae0c5debf103a5aadd4dfef3c68c5ccb6c4d8ac63dd2bfae889/cowpy-1.1.5.tar.gz", hash = "sha256:089172db1d88c30a2e1b741b18945ee84170bd943a3ca71948e4ae3a3255e554", size = 24724, upload-time = "2022-03-06T18:17:38.926Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/29/a2/76daec910034d765f1018d22660c0970fb99f77143a42841d067b522903e/cowpy-1.1.5-py3-none-any.whl", hash = "sha256:de5ae7646dd30b4936013666c6bd019af9cf411cc3b377c8538cfd8414262921", size = 13943, upload-time = "2022-03-06T18:17:37.186Z" },
+]
+
+[[package]]
+name = "python-course-fastapi"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "cowpy" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "cowpy", specifier = ">=1.1.5" }]
