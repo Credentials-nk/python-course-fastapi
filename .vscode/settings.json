@@ -5,5 +5,11 @@
   "code-runner.executorMap": {
     "python": "uv run python"
   },
-  "code-runner.runInTerminal": true
+  "code-runner.runInTerminal": true,
+  "python.languageServer": "Pylance",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/.venv/lib/python3.13/site-packages"
+  ],
+  "python.analysis.autoImportCompletions": true
 }
