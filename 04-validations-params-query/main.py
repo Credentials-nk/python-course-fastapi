@@ -77,7 +77,18 @@ def home():
 
 @app.get("/posts", response_model=List[PostPublic])
 def list_posts(
-    query: str | None = Query(default=None, description="Test for search by title"),
+    query: Optional[str] = Query(
+        default=None,
+        description="Test for search by title",
+        alias="search",
+        min_length=3,
+        max_length=10,
+        # Acepta: letras a-z, A-Z, dígitos, guión bajo (_),
+        # y vocales con tilde (á é í ó ú Á É Í Ó Ú Ü ü)
+        # No permite espacios, símbolos ni caracteres especiales
+        # Debe tener al menos 1 carácter del set definido
+        pattern=r"^[\w\sáéíóúÁÉÍÓÚÜü-]+$",
+    ),
 ):
     if query:
         return [post for post in BLOG_POST if query.lower() in post["title"].lower()]
