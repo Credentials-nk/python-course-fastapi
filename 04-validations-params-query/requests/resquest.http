@@ -1,0 +1,57 @@
+@base_url = http://localhost:8000
+
+### Home
+GET {{base_url}}/
+
+### List all posts
+GET {{base_url}}/posts
+
+### List posts with search query
+GET {{base_url}}/posts?query=fastapi
+
+### Get post by ID
+GET {{base_url}}/posts/1
+
+### Get post by ID without content
+GET {{base_url}}/posts/1?include_content=false
+
+### Get post that doesn't exist
+GET {{base_url}}/posts/999
+
+### Create a new post
+POST {{base_url}}/posts
+Content-Type: application/json
+
+{
+    "title": "New Post",
+    "content": "This is a new post created via HTTP request"
+}
+
+### Create post without title (should return error)
+POST {{base_url}}/posts
+Content-Type: application/json
+
+{
+    "content": "Missing title"
+}
+
+### Create post with empty title (should return error)
+POST {{base_url}}/posts
+Content-Type: application/json
+
+{
+    "title": "   ",
+    "content": "Empty title"
+}
+
+### Create post with empty title (should return error)
+PUT {{base_url}}/posts/12
+Content-Type: application/json
+
+{
+    "title": "New Title 2",
+    "content": "This content has been changed"
+}
+
+### Delete post by ID
+DELETE {{base_url}}/posts/1

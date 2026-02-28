@@ -8,3 +8,8 @@ dependencies = [
     "cowpy>=1.1.5",
     "fastapi[standard]>=0.129.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.2",
+]
