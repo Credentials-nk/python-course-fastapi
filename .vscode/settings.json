@@ -7,7 +7,7 @@
   },
   "code-runner.runInTerminal": true,
   "python.languageServer": "Pylance",
-  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.typeCheckingMode": "standard",
   "python.analysis.extraPaths": [
     "${workspaceFolder}/.venv/lib/python3.13/site-packages"
   ],
