@@ -12,6 +12,12 @@
     "${workspaceFolder}/.venv/lib/python3.13/site-packages"
   ],
   "python.analysis.autoImportCompletions": true,
+  "python.analysis.packageIndexDepths": [
+    {
+      "name": "sqlalchemy",
+      "depth": 3
+    }
+  ],
   "[python]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",
