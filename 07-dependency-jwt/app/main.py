@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+from api.v1.auth.router import router as auth_router
 from api.v1.posts.router import router as post_router
 from core.db import DATABASE_URL, Base, engine, logger
 from fastapi import FastAPI
@@ -28,6 +29,7 @@ async def lifespan(_: FastAPI):
 def create_app() -> FastAPI:
     app = FastAPI(title="Mini Blog", lifespan=lifespan)
 
+    app.include_router(router=auth_router, prefix="/api/v1")
     app.include_router(router=post_router)
 
     return app

@@ -22,7 +22,8 @@ class PostBase(BaseModel):
     title: str
     content: str
     tags: Optional[List[Tag]] = Field(default_factory=list)
-    author: Optional[Author] = None
+    # author: Optional[Author] = None
+    author: Author
 
 
 class PostCreate(PostBase):

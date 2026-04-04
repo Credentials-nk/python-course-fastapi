@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional, Union
 
 from core.db import DbSession
-from core.security import oauth2_scheme
+from core.security import get_current_user, oauth2_scheme
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 from .exceptions import PostConflictError, PostDatabaseError
@@ -85,7 +85,7 @@ def get_post(
     post_id: int = Path(
         ...,
         ge=1,
-        lt=4,
+        # lt=4,
         title="ID Post",
         description="Identifier of Post. Should be gretter tan 1.",
         example=1,
@@ -97,7 +97,7 @@ def get_post(
     post = repository.get(post_id=post_id)
 
     if post is None:
-        return HTTPException(status_code=404, detail="Post not found")
+        raise HTTPException(status_code=404, detail="Post not found")
 
     return (
         PostPublic.model_validate(post, from_attributes=True)
@@ -112,14 +112,14 @@ def get_post(
     response_description="Post Created",
     status_code=status.HTTP_201_CREATED,
 )
-def create_post(post: PostCreate, db: DbSession):
+def create_post(post: PostCreate, db: DbSession, user=Depends(get_current_user)):
     repository = PostRepository(db)
 
     try:
         return repository.create_post(
             title=post.title,
             content=post.content,
-            author=post.author.model_dump() if post.author else None,
+            author=user,
             tags=[tag.model_dump() for tag in (post.tags or [])],
         )
     except PostConflictError:
@@ -136,7 +136,9 @@ def create_post(post: PostCreate, db: DbSession):
     response_description="Post Updated",
     response_model_exclude_none=True,
 )
-def update_post(post_id: int, data: PostUpdate, db: DbSession):
+def update_post(
+    post_id: int, data: PostUpdate, db: DbSession, user=Depends(get_current_user)
+):
     repository = PostRepository(db)
 
     try:
@@ -153,7 +155,7 @@ def update_post(post_id: int, data: PostUpdate, db: DbSession):
 
 
 @router.delete("/{post_id}", status_code=204)
-def delete_post(post_id: int, db: DbSession):
+def delete_post(post_id: int, db: DbSession, user=Depends(get_current_user)):
     repository = PostRepository(db)
 
     try:
