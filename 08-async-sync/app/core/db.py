@@ -4,30 +4,25 @@ from typing import Annotated
 
 from dotenv import load_dotenv
 from fastapi import Depends
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase
 
 # ============== Config Database Connect =======================
 load_dotenv()
 
 
 # Lee la URL de conexión, crea el engine de SQLAlchemy y la fábrica de sesiones
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./blog.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./blog.db")
 logger = logging.getLogger("uvicorn.error")
 
-# Argumentos extra para SQLite: evita el error de "same thread" en entornos async
-engine_kwargs = {}
-if DATABASE_URL.startswith("sqlite"):
-    engine_kwargs["connect_args"] = {"check_same_thread": False}
-
-# Motor de conexión a la base de datos, con echo opcional para debug
-engine = create_engine(
-    DATABASE_URL, echo=os.getenv("DB_ECHO", "false").lower() == "true", **engine_kwargs
+# Motor de conexión async a la base de datos, con echo opcional para debug
+engine = create_async_engine(
+    DATABASE_URL, echo=os.getenv("DB_ECHO", "false").lower() == "true"
 )
 
-# Fábrica de sesiones reutilizable vinculada al engine
-SessionLocal = sessionmaker(
-    bind=engine, autoflush=False, autocommit=False, class_=Session
+# Fábrica de sesiones async reutilizable vinculada al engine
+SessionLocal = async_sessionmaker(
+    bind=engine, autoflush=False, autocommit=False, class_=AsyncSession
 )
 
 
@@ -36,16 +31,14 @@ class Base(DeclarativeBase):
     pass
 
 
-# Dependencia de FastAPI que provee una sesión de DB por request y ciclo de vida
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    except Exception:
-        db.rollback()
-        raise
-    finally:
-        db.close()
+# Dependencia de FastAPI que provee una sesión async de DB por request y ciclo de vida
+async def get_db():
+    async with SessionLocal() as db:
+        try:
+            yield db
+        except Exception:
+            await db.rollback()
+            raise
 
 
-DbSession = Annotated[Session, Depends(get_db)]
+DbSession = Annotated[AsyncSession, Depends(get_db)]

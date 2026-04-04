@@ -34,7 +34,7 @@ router = APIRouter(prefix="/posts", tags=["posts"])
 
 
 @router.get("", response_model=PaginatedPost)
-def list_posts(
+async def list_posts(
     db: DbSession,
     text: Optional[str] = Query(
         default=None,
@@ -59,7 +59,7 @@ def list_posts(
 
     query = query or text
 
-    total, total_pages, current_page, orm_posts = repository.search(
+    total, total_pages, current_page, orm_posts = await repository.search(
         query, order_by, direction, page, per_page
     )
 
@@ -80,7 +80,7 @@ def list_posts(
 
 
 @router.get("/by-tags", response_model=List[PostPublic])
-def filter_by_tags(
+async def filter_by_tags(
     db: DbSession,
     tags: List[str] = Query(
         ...,
@@ -92,7 +92,7 @@ def filter_by_tags(
 
     repository = PostRepository(db)
 
-    posts = repository.by_tags(tags)
+    posts = await repository.by_tags(tags)
 
     return posts
 
@@ -102,7 +102,7 @@ def filter_by_tags(
     response_model=Union[PostPublic, PostSummary],
     response_description="Post found",
 )
-def get_post(
+async def get_post(
     db: DbSession,
     post_id: int = Path(
         ...,
@@ -116,7 +116,7 @@ def get_post(
 ):
     repository = PostRepository(db)
 
-    post = repository.get(post_id=post_id)
+    post = await repository.get(post_id=post_id)
 
     if post is None:
         raise HTTPException(status_code=404, detail="Post not found")
@@ -134,11 +134,11 @@ def get_post(
     response_description="Post Created",
     status_code=status.HTTP_201_CREATED,
 )
-def create_post(post: PostCreate, db: DbSession, user=Depends(get_current_user)):
+async def create_post(post: PostCreate, db: DbSession, user=Depends(get_current_user)):
     repository = PostRepository(db)
 
     try:
-        return repository.create_post(
+        return await repository.create_post(
             title=post.title,
             content=post.content,
             author=user,
@@ -158,7 +158,7 @@ def create_post(post: PostCreate, db: DbSession, user=Depends(get_current_user))
     response_description="Post Updated",
     response_model_exclude_none=True,
 )
-def update_post(
+async def update_post(
     post_id: int, data: PostUpdate, db: DbSession, user=Depends(get_current_user)
 ):
     repository = PostRepository(db)
@@ -166,7 +166,7 @@ def update_post(
     try:
         updates = data.model_dump(exclude_unset=True)
 
-        post_updated = repository.update_post(post_id=post_id, payload=updates)
+        post_updated = await repository.update_post(post_id=post_id, payload=updates)
 
         if not post_updated:
             raise HTTPException(status_code=404, detail="Post not found")
@@ -177,11 +177,11 @@ def update_post(
 
 
 @router.delete("/{post_id}", status_code=204)
-def delete_post(post_id: int, db: DbSession, user=Depends(get_current_user)):
+async def delete_post(post_id: int, db: DbSession, user=Depends(get_current_user)):
     repository = PostRepository(db)
 
     try:
-        post_deleted = repository.delete_post(post_id=post_id)
+        post_deleted = await repository.delete_post(post_id=post_id)
 
         if not post_deleted:
             raise HTTPException(status_code=404, detail="Post not found")
