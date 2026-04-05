@@ -57,7 +57,9 @@ class PostCreate(PostBase):
         content: Annotated[str, Form(min_length=10)],
         tags: Annotated[Optional[List[str]], Form()] = None,
     ):
-        tags_objs = [Tag(name=t) for t in (tags or [])]
+        # Swagger envía tags como "a,b,c" en un campo; split los separa
+        flat = [t.strip() for raw in (tags or []) for t in raw.split(",") if t.strip()]
+        tags_objs = [Tag(name=t) for t in flat]
         return cls(title=title, content=content, tags=tags_objs)
 
 
