@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from api.v1.auth.router import router as auth_router
 from api.v1.posts.router import router as post_router
+from api.v1.tags.router import router as tags_router
 from api.v1.uploads.router import MEDIA_DIR
 from api.v1.uploads.router import router as uploads_router
 from core.db import DATABASE_URL, Base, engine, logger
@@ -37,6 +38,7 @@ def create_app() -> FastAPI:
     app.include_router(router=auth_router, prefix="/api/v1")
     app.include_router(router=post_router)
     app.include_router(router=uploads_router)
+    app.include_router(router=tags_router)
 
     os.makedirs(MEDIA_DIR, exist_ok=True)
     app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
