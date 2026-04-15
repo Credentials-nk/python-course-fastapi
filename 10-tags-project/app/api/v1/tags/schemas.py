@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -18,3 +20,14 @@ class TagUpdate(BaseModel):
 
 class TagWithCount(TagPublic):
     uses: int
+
+
+class PaginatedTag(BaseModel):
+    page: int
+    per_page: int
+    total: int
+    total_pages: int
+    search: Optional[str]
+    order_by: str
+    direction: str
+    items: List[TagPublic]
