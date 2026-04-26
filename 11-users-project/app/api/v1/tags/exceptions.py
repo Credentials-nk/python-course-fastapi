@@ -1,0 +1,2 @@
+class TagDatabaseError(Exception):
+    pass
